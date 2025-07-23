@@ -31,20 +31,6 @@ from telegram.ext import (
 from google.oauth2.service_account import Credentials
 
 from flask import Flask
-
-app = Flask(__name__)
-bot = Bot(token=os.getenv('TELEGRAM_TOKEN'))
-dispatcher = Dispatcher(bot, None, workers=0)
-
-@app.route('/')
-def home():
-    return "Бот работает! Версия 1.0"
-
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    update = Update.de_json(request.get_json(), bot)
-    dispatcher.process_update(update)
-    return 'ok'
  
 # Перечисления для типов контента
 class ContentType(Enum):
@@ -842,7 +828,21 @@ async def main_async():
     )
     
     await bot.run_async()
+ 
+app = Flask(__name__)
+bot = Bot(token=os.getenv('TELEGRAM_TOKEN'))
+dispatcher = Dispatcher(bot, None, workers=0)
 
+@app.route('/')
+def home():
+    return "Бот работает! Версия 1.0"
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    update = Update.de_json(request.get_json(), bot)
+    dispatcher.process_update(update)
+    return 'ok'
+ 
 def main():
     """Главная функция запуска бота"""
     bot = ClinicBot(
