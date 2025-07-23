@@ -28,7 +28,13 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
+from flask import Flask
+app = Flask(__name__)
 
+@app.route('/')
+def home():
+    return "Бот работает!"
+ 
 # Перечисления для типов контента
 class ContentType(Enum):
     TEXT = "text"
@@ -854,5 +860,5 @@ def main():
 import nest_asyncio
 nest_asyncio.apply()
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
