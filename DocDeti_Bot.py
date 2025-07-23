@@ -106,7 +106,7 @@ class MenuItem:
         )
 
 # Конфигурация
- class Config:
+class Config:
     TOKEN = os.getenv('TELEGRAM_TOKEN') 
     SHEET_ID = os.getenv('SHEET_ID')     
     CACHE_DURATION = int(os.getenv('CACHE_DURATION', 3600))
