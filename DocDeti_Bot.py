@@ -856,4 +856,15 @@ import nest_asyncio
 nest_asyncio.apply()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    # Для локальной разработки с polling
+    from threading import Thread
+    
+    # Запускаем Flask в отдельном потоке
+    Thread(target=lambda: app.run(
+        host='0.0.0.0',
+        port=int(os.getenv('PORT', 5000)),
+        debug=False
+    )).start()
+    
+    # Запускаем бота
+    bot.run()
