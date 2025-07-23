@@ -162,12 +162,12 @@ class GoogleSheetsManager:
     async def _get_client(self):
         if self._client is None:
             creds = Credentials.from_service_account_info(
-                json.loads(os.getenv('GOOGLE_SHEETS_CREDS')),
-                scopes=[
-                    "https://www.googleapis.com/auth/spreadsheets",
-                    "https://www.googleapis.com/auth/drive"
-                ]
-            )
+    json.loads(os.getenv('GOOGLE_SHEETS_CREDS')),
+    scopes=[
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+)
             self._client = gspread.authorize(creds)
         return self._client
         
