@@ -8,8 +8,8 @@ from enum import Enum
 import re
 import os
 import json
-from aiogram import Bot, Dispatcher, types
-import requests  # или from flask import request, в зависимости от вашего случая
+from flask import request  
+from aiogram import Bot, Dispatcher
 
 import gspread
 import telegram
