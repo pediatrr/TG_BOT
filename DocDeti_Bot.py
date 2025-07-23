@@ -31,11 +31,20 @@ from telegram.ext import (
 from google.oauth2.service_account import Credentials
 
 from flask import Flask
+
 app = Flask(__name__)
+bot = Bot(token=os.getenv('TELEGRAM_TOKEN'))
+dispatcher = Dispatcher(bot, None, workers=0)
 
 @app.route('/')
 def home():
-    return "Бот работает!"
+    return "Бот работает! Версия 1.0"
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    update = Update.de_json(request.get_json(), bot)
+    dispatcher.process_update(update)
+    return 'ok'
  
 # Перечисления для типов контента
 class ContentType(Enum):
@@ -97,10 +106,10 @@ class MenuItem:
         )
 
 # Конфигурация
-class Config:
-    TOKEN = "8111740535:AAEzEBWQI0rFAdR4gjIGS2SghOOe7oN4L1U" 
-    CREDS_FILE = "tgbot-462808-d22126ad19f9.json"
-    SHEET_ID = "1IC_xPztOh2w_6X4dW-9DsG1qgf0Alvk3WdnR4V7yG-4"
+ class Config:
+    TOKEN = os.getenv('TELEGRAM_TOKEN') 
+    SHEET_ID = os.getenv('SHEET_ID')     
+    CACHE_DURATION = int(os.getenv('CACHE_DURATION', 3600))
     CACHE_DURATION = 3600  # 1 час
     MAX_SEARCH_RESULTS = 5
     MAX_MESSAGE_LENGTH = 4000
@@ -144,36 +153,22 @@ class DataCache:
 class GoogleSheetsManager:
     """Менеджер для работы с Google Sheets"""
     
-    def __init__(self, creds_file: str, sheet_id: str):
-        """
-        Инициализация менеджера
-        
-        Args:
-            creds_file: Путь к файлу учетных данных Google Service Account
-            sheet_id: ID Google-таблицы
-        """
-        if not creds_file:
-            raise ValueError("Необходимо указать creds_file")
+    def __init__(self, sheet_id: str):
         if not sheet_id:
             raise ValueError("Необходимо указать sheet_id")
-            
-        self.creds_file = creds_file
         self.sheet_id = sheet_id
         self._client = None
-        
-    async def _get_client(self) -> Client:
-        """Получает клиент Google Sheets"""
+
+    async def _get_client(self):
         if self._client is None:
-            try:
-                scope = [
+            creds = Credentials.from_service_account_info(
+                json.loads(os.getenv('GOOGLE_SHEETS_CREDS')),
+                scopes=[
                     "https://www.googleapis.com/auth/spreadsheets",
                     "https://www.googleapis.com/auth/drive"
                 ]
-                creds = Credentials.from_service_account_info(json.loads(os.environ['GOOGLE_SHEETS_CREDS']))
-                self._client = gspread.authorize(creds)
-            except Exception as e:
-                logger.error(f"Ошибка создания клиента Google Sheets: {e}")
-                raise
+            )
+            self._client = gspread.authorize(creds)
         return self._client
         
     async def fetch_data(self) -> List[MenuItem]:
