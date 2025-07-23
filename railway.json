@@ -2,7 +2,8 @@
   "build": {
     "builder": "nixpacks",
     "config": {
-      "language": "python"
+      "language": "python",
+      "installCommand": "pip install -r requirements.txt"
     }
   }
 }
