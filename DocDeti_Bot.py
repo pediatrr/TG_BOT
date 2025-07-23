@@ -6,6 +6,10 @@ from typing import Optional, Union, List, Dict, Any, Tuple
 from dataclasses import dataclass
 from enum import Enum
 import re
+import os
+import json
+from aiogram import Bot, Dispatcher, types
+import requests  # или from flask import request, в зависимости от вашего случая
 
 import gspread
 import telegram
