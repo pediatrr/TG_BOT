@@ -28,6 +28,8 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
+from google.oauth2.service_account import Credentials
+
 from flask import Flask
 app = Flask(__name__)
 
@@ -167,9 +169,7 @@ class GoogleSheetsManager:
                     "https://www.googleapis.com/auth/spreadsheets",
                     "https://www.googleapis.com/auth/drive"
                 ]
-                creds = ServiceAccountCredentials.from_json_keyfile_name(
-                    self.creds_file, scope
-                )
+                creds = Credentials.from_service_account_info(json.loads(os.environ['GOOGLE_SHEETS_CREDS']))
                 self._client = gspread.authorize(creds)
             except Exception as e:
                 logger.error(f"Ошибка создания клиента Google Sheets: {e}")
